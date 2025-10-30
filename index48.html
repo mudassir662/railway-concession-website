@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MHSSCE Railway Concession Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --mhssce-blue: #1a237e;
+            --mhssce-light-blue: #283593;
+            --mhssce-accent: #3949ab;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--mhssce-blue) !important;
+        }
+        
+        .portal-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .portal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .student-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .admin-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .active-page {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .form-section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .file-upload {
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        .file-upload:hover {
+            border-color: var(--mhssce-blue);
+            background: #e9ecef;
+        }
+        
+        .status-wait { color: #ff9800; font-weight: 600; }
+        .status-approved { color: #4caf50; font-weight: 600; }
+        .status-completed { color: #2196f3; font-weight: 600; }
+        .status-rejected { color: #f44336; font-weight: 600; }
+        
+        .table-responsive {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .action-btn {
+            margin: 2px;
+            font-size: 0.8rem;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .section-title {
+            color: var(--mhssce-blue);
+            border-bottom: 2px solid var(--mhssce-light-blue);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .toast-container {
+            z-index: 9999;
+        }
+        
+        .option-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .option-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--mhssce-blue);
+        }
+        
+        .new-app-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        
+        .check-status-card {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-train me-2"></i>
+                MHSSCE Railway Concession Portal
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text text-muted" id="pageTitle">Home</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Landing Page -->
+        <div id="landingPage" class="page active-page">
+            <div class="row justify-content-center text-center">
+                <div class="col-md-8">
+                    <h1 class="display-4 mb-4 text-dark">Welcome to Railway Concession Portal</h1>
+                    <p class="lead text-muted mb-5">Manage your railway concession applications efficiently</p>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="card portal-card student-card h-100" onclick="showPage('studentPortal')">
+                                <div class="card-body p-5">
+                                    <i class="fas fa-graduation-cap fa-4x mb-4"></i>
+                                    <h3 class="card-title">Student Portal</h3>
+                                    <p class="card-text">Apply for railway concession or check your application status</p>
+                                    <div class="btn btn-light btn-lg mt-3">
+                                        Enter Student Portal
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card portal-card admin-card h-100" onclick="showPage('adminPortal')">
+                                <div class="card-body p-5">
+                                    <i class="fas fa-user-shield fa-4x mb-4"></i>
+                                    <h3 class="card-title">Admin Portal</h3>
+                                    <p class="card-text">Manage and approve student concession applications</p>
+                                    <div class="btn btn-light btn-lg mt-3">
+                                        Enter Admin Portal
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Portal -->
+        <div id="studentPortal" class="page">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="text-dark">Student Portal</h2>
+                        <button class="btn btn-outline-secondary" onclick="showPage('landingPage')">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Home
+                        </button>
+                    </div>
+
+                    <!-- Selection Step -->
+                    <div id="studentSelection" class="form-section">
+                        <h4 class="section-title">What would you like to do?</h4>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="card option-card new-app-card h-100" onclick="showStudentOption('newApplication')">
+                                    <div class="card-body p-4 text-center">
+                                        <i class="fas fa-file-alt fa-3x mb-3"></i>
+                                        <h4 class="card-title">New Application</h4>
+                                        <p class="card-text">Apply for a new railway concession</p>
+                                        <div class="btn btn-light mt-2">
+                                            Start New Application
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card option-card check-status-card h-100" onclick="showStudentOption('checkStatus')">
+                                    <div class="card-body p-4 text-center">
+                                        <i class="fas fa-search fa-3x mb-3"></i>
+                                        <h4 class="card-title">Check Status</h4>
+                                        <p class="card-text">Check status of your previous applications</p>
+                                        <div class="btn btn-light mt-2">
+                                            Check Application Status
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Email Entry for Status Check -->
+                    <div id="studentEmailEntry" class="form-section" style="display: none;">
+                        <h4 class="section-title">Enter Your Email to Check Status</h4>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <input type="email" class="form-control form-control-lg" id="studentEmail" 
+                                       placeholder="Enter your college email address">
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-primary btn-lg w-100" onclick="checkStudentEmail()">
+                                    Check Status
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button class="btn btn-outline-secondary" onclick="showStudentOption('backToSelection')">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Options
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Application Form -->
+                    <div id="studentForm" class="form-section" style="display: none;">
+                        <h4 class="section-title">Railway Concession Application</h4>
+                        <div class="mb-3">
+                            <button class="btn btn-outline-secondary" onclick="showStudentOption('backToSelection')">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Options
+                            </button>
+                        </div>
+                        <form id="concessionForm">
+                            <!-- Personal Details -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h5 class="border-bottom pb-2 text-primary">Personal Details</h5>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">First Name *</label>
+                                    <input type="text" class="form-control" name="firstName" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Middle Name</label>
+                                    <input type="text" class="form-control" name="middleName">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Last Name *</label>
+                                    <input type="text" class="form-control" name="lastName" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Gender *</label>
+                                    <select class="form-select" name="gender" required>
+                                        <option value="">Select Gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Date of Birth *</label>
+                                    <input type="date" class="form-control" name="dob" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Contact Number *</label>
+                                    <input type="tel" class="form-control" name="contact" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Email ID *</label>
+                                    <input type="email" class="form-control" id="formEmail" name="email" required>
+                                </div>
+                            </div>
+
+                            <!-- Address Details -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h5 class="border-bottom pb-2 text-primary">Address Details</h5>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">Address *</label>
+                                    <textarea class="form-control" name="address" rows="3" required></textarea>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">PIN Code *</label>
+                                    <input type="text" class="form-control" name="pincode" required>
+                                </div>
+                            </div>
+
+                            <!-- Journey Details -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h5 class="border-bottom pb-2 text-primary">Journey Details</h5>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Source Station *</label>
+                                    <input type="text" class="form-control" name="sourceStation" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Destination Station *</label>
+                                    <select class="form-select" name="destinationStation" required>
+                                        <option value="">Select Destination Station</option>
+                                        <option value="Byculla">Byculla</option>
+                                        <option value="Mumbai Central">Mumbai Central</option>
+                                        <option value="Sandhurst Road">Sandhurst Road</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Class of Travel *</label>
+                                    <select class="form-select" name="classType" required>
+                                        <option value="">Select Class</option>
+                                        <option value="First">First Class</option>
+                                        <option value="Second">Second Class</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Duration *</label>
+                                    <select class="form-select" name="duration" required>
+                                        <option value="">Select Duration</option>
+                                        <option value="Monthly">Monthly</option>
+                                        <option value="Quarterly">Quarterly</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Academic Details -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h5 class="border-bottom pb-2 text-primary">Academic Details</h5>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Branch *</label>
+                                    <select class="form-select" name="branch" required>
+                                        <option value="">Select Branch</option>
+                                        <option value="Automobile">Automobile</option>
+                                        <option value="Computer">Computer</option>
+                                        <option value="IT">IT</option>
+                                        <option value="Mechanical">Mechanical</option>
+                                        <option value="Civil">Civil</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Academic Year *</label>
+                                    <select class="form-select" name="academicYear" required>
+                                        <option value="">Select Year</option>
+                                        <option value="FE">First Year</option>
+                                        <option value="SE">Second Year</option>
+                                        <option value="TE">Third Year</option>
+                                        <option value="BE">Final Year</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Semester *</label>
+                                    <select class="form-select" name="semester" required>
+                                        <option value="">Select Semester</option>
+                                        <option value="1">Semester 1</option>
+                                        <option value="2">Semester 2</option>
+                                        <option value="3">Semester 3</option>
+                                        <option value="4">Semester 4</option>
+                                        <option value="5">Semester 5</option>
+                                        <option value="6">Semester 6</option>
+                                        <option value="7">Semester 7</option>
+                                        <option value="8">Semester 8</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- File Upload -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h5 class="border-bottom pb-2 text-primary">ID Card Upload</h5>
+                                </div>
+                                <div class="col-12">
+                                    <div class="file-upload" onclick="document.getElementById('idCardFile').click()">
+                                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                        <p class="mb-2">Click to upload or drag and drop</p>
+                                        <p class="text-muted small">JPEG or JPG (Max. 1MB)</p>
+                                        <input type="file" id="idCardFile" accept=".jpg,.jpeg" style="display: none;" onchange="handleFileSelect(this)">
+                                        <div id="fileName" class="text-success fw-bold mt-2"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <button type="button" class="btn btn-success btn-lg w-100" onclick="submitApplication()">
+                                        <i class="fas fa-paper-plane me-2"></i>Submit Application
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Status Table -->
+                    <div id="studentStatusTable" class="form-section" style="display: none;">
+                        <h4 class="section-title">Application Status</h4>
+                        <div class="mb-3">
+                            <button class="btn btn-outline-secondary" onclick="showStudentOption('backToSelection')">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Options
+                            </button>
+                        </div>
+                        <div id="statusTableContainer">
+                            <!-- Status table will be loaded here -->
+                        </div>
+                        <div class="text-center mt-4">
+                            <button class="btn btn-primary" onclick="showNewApplication()">
+                                <i class="fas fa-plus me-2"></i>Apply for New Concession
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Portal -->
+        <div id="adminPortal" class="page">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="text-dark">Admin Portal</h2>
+                        <button class="btn btn-outline-secondary" onclick="showPage('landingPage')">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Home
+                        </button>
+                    </div>
+
+                    <!-- Admin Login -->
+                    <div id="adminLogin" class="form-section">
+                        <h4 class="section-title">Admin Login</h4>
+                        <form id="adminLoginForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Email Address *</label>
+                                    <input type="email" class="form-control" id="adminEmail" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Password *</label>
+                                    <input type="password" class="form-control" id="adminPassword" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <button type="button" class="btn btn-primary btn-lg w-100" onclick="handleAdminLogin()">
+                                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="text-center mt-3">
+                            <small class="text-muted">Default admin: admin@mhssce.ac.in / admin123</small>
+                        </div>
+                    </div>
+
+                    <!-- Admin Dashboard -->
+                    <div id="adminDashboard" class="form-section" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="section-title mb-0">Applications Dashboard</h4>
+                            <button class="btn btn-outline-danger" onclick="adminLogout()">
+                                <i class="fas fa-sign-out-alt me-1"></i>Logout
+                            </button>
+                        </div>
+
+                        <!-- Statistics -->
+                        <div class="row mb-4" id="adminStats">
+                            <!-- Stats will be loaded here -->
+                        </div>
+
+                        <!-- Applications Table -->
+                        <div id="adminTableContainer">
+                            <!-- Applications table will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Data storage
+        let applications = JSON.parse(localStorage.getItem('railwayConcessionApplications')) || [];
+        const adminUsers = [
+            { email: 'admin@mhssce.ac.in', password: 'admin123', role: 'ADMIN' }
+        ];
+
+        // Page navigation
+        function showPage(pageId) {
+            console.log('Showing page:', pageId);
+            
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active-page');
+            });
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active-page');
+            
+            // Update page title
+            const titles = {
+                'landingPage': 'Home',
+                'studentPortal': 'Student Portal', 
+                'adminPortal': 'Admin Portal'
+            };
+            document.getElementById('pageTitle').textContent = titles[pageId] || 'Home';
+            
+            // Reset student portal to selection
+            if (pageId === 'studentPortal') {
+                resetStudentPortal();
+            }
+        }
+
+        function resetStudentPortal() {
+            document.getElementById('studentSelection').style.display = 'block';
+            document.getElementById('studentEmailEntry').style.display = 'none';
+            document.getElementById('studentForm').style.display = 'none';
+            document.getElementById('studentStatusTable').style.display = 'none';
+            document.getElementById('studentEmail').value = '';
+        }
+
+        // Student option selection
+        function showStudentOption(option) {
+            console.log('Student option:', option);
+            if (option === 'newApplication') {
+                document.getElementById('studentSelection').style.display = 'none';
+                document.getElementById('studentForm').style.display = 'block';
+                document.getElementById('studentEmailEntry').style.display = 'none';
+                document.getElementById('studentStatusTable').style.display = 'none';
+                document.getElementById('formEmail').value = '';
+            } else if (option === 'checkStatus') {
+                document.getElementById('studentSelection').style.display = 'none';
+                document.getElementById('studentEmailEntry').style.display = 'block';
+                document.getElementById('studentForm').style.display = 'none';
+                document.getElementById('studentStatusTable').style.display = 'none';
+            } else if (option === 'backToSelection') {
+                resetStudentPortal();
+            }
+        }
+
+        // Toast notification
+        function showToast(message, type = 'info') {
+            const toastContainer = document.querySelector('.toast-container');
+            const toastId = 'toast-' + Date.now();
+            
+            const toastHTML = `
+                <div id="${toastId}" class="toast" role="alert">
+                    <div class="toast-header ${getToastHeaderClass(type)}">
+                        <strong class="me-auto">${type.charAt(0).toUpperCase() + type.slice(1)}</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                </div>
+            `;
+            
+            toastContainer.innerHTML += toastHTML;
+            
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
+
+            // Remove toast from DOM after it hides
+            toastElement.addEventListener('hidden.bs.toast', () => {
+                toastElement.remove();
+            });
+        }
+
+        function getToastHeaderClass(type) {
+            switch(type) {
+                case 'success': return 'bg-success text-white';
+                case 'error': return 'bg-danger text-white';
+                case 'warning': return 'bg-warning';
+                default: return 'bg-info text-white';
+            }
+        }
+
+        // Student portal functions
+        function checkStudentEmail() {
+            const email = document.getElementById('studentEmail').value.trim();
+            
+            if (!email) {
+                showToast('Please enter your email address', 'error');
+                return;
+            }
+
+            // Reload applications from localStorage to get latest data
+            applications = JSON.parse(localStorage.getItem('railwayConcessionApplications')) || [];
+            
+            console.log('Checking applications for email:', email);
+            console.log('All applications:', applications);
+            
+            const userApplications = applications.filter(app => app.email === email);
+            console.log('Found applications:', userApplications);
+            
+            if (userApplications.length > 0) {
+                displayStatusTable(userApplications);
+                document.getElementById('studentEmailEntry').style.display = 'none';
+                document.getElementById('studentStatusTable').style.display = 'block';
+                showToast(`Found ${userApplications.length} application(s)`, 'success');
+            } else {
+                showToast('No applications found for this email address. Please submit a new application.', 'info');
+            }
+        }
+
+        function handleFileSelect(input) {
+            const file = input.files[0];
+            if (file) {
+                if (file.size > 1024 * 1024) {
+                    showToast('File size must be less than 1MB', 'error');
+                    input.value = '';
+                    document.getElementById('fileName').textContent = '';
+                    return;
+                }
+                document.getElementById('fileName').textContent = `Selected: ${file.name}`;
+            }
+        }
+
+        function submitApplication() {
+            const form = document.getElementById('concessionForm');
+            const formData = new FormData(form);
+            const fileInput = document.getElementById('idCardFile');
+            
+            // Basic validation
+            if (!fileInput.files[0]) {
+                showToast('Please upload your ID card', 'error');
+                return;
+            }
+
+            // Check if all required fields are filled
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.classList.add('is-invalid');
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+
+            if (!isValid) {
+                showToast('Please fill all required fields', 'error');
+                return;
+            }
+
+            const application = {
+                id: Date.now().toString(),
+                firstName: formData.get('firstName'),
+                middleName: formData.get('middleName'),
+                lastName: formData.get('lastName'),
+                gender: formData.get('gender'),
+                email: formData.get('email'),
+                dob: formData.get('dob'),
+                contact: formData.get('contact'),
+                address: formData.get('address'),
+                pincode: formData.get('pincode'),
+                sourceStation: formData.get('sourceStation'),
+                destinationStation: formData.get('destinationStation'),
+                classType: formData.get('classType'),
+                duration: formData.get('duration'),
+                branch: formData.get('branch'),
+                academicYear: formData.get('academicYear'),
+                semester: formData.get('semester'),
+                idCardPath: 'uploads/' + fileInput.files[0].name,
+                status: 'WAIT',
+                remarks: '',
+                createdAt: new Date().toISOString()
+            };
+
+            applications.push(application);
+            localStorage.setItem('railwayConcessionApplications', JSON.stringify(applications));
+            
+            showToast('Application submitted successfully!', 'success');
+            
+            // Show status table
+            const userApplications = applications.filter(app => app.email === application.email);
+            displayStatusTable(userApplications);
+            document.getElementById('studentForm').style.display = 'none';
+            document.getElementById('studentStatusTable').style.display = 'block';
+        }
+
+        function displayStatusTable(userApplications) {
+            const container = document.getElementById('statusTableContainer');
+            
+            if (userApplications.length === 0) {
+                container.innerHTML = `
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        No applications found for this email address.
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Source</th>
+                                <th>Destination</th>
+                                <th>Class</th>
+                                <th>Duration</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>ID Card</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            userApplications.forEach((app, index) => {
+                const statusClass = `status-${app.status.toLowerCase()}`;
+                const statusText = getStatusText(app.status);
+                
+                html += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${app.firstName} ${app.lastName}</td>
+                        <td>${app.sourceStation}</td>
+                        <td>${app.destinationStation}</td>
+                        <td>${app.classType}</td>
+                        <td>${app.duration}</td>
+                        <td>${formatDate(app.createdAt)}</td>
+                        <td class="${statusClass}">${statusText}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewIdCard('${app.idCardPath}')">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                        </td>
+                        <td>${app.remarks || '-'}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'WAIT': '⏸ Wait',
+                'APPROVED': '✅ Approved',
+                'COMPLETED': '🔵 Completed', 
+                'REJECTED': '❌ Rejected'
+            };
+            return statusMap[status] || status;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-IN');
+        }
+
+        function showNewApplication() {
+            document.getElementById('studentStatusTable').style.display = 'none';
+            document.getElementById('studentForm').style.display = 'block';
+            document.getElementById('concessionForm').reset();
+            document.getElementById('fileName').textContent = '';
+        }
+
+        function viewIdCard(imagePath) {
+            showToast('ID Card viewing functionality would be implemented here', 'info');
+        }
+
+        // Admin portal functions
+        function handleAdminLogin() {
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            
+            const admin = adminUsers.find(user => user.email === email && user.password === password);
+            
+            if (admin) {
+                document.getElementById('adminLogin').style.display = 'none';
+                document.getElementById('adminDashboard').style.display = 'block';
+                loadAdminDashboard();
+                showToast('Login successful!', 'success');
+            } else {
+                showToast('Invalid email or password', 'error');
+            }
+        }
+
+        function loadAdminDashboard() {
+            // Reload applications from localStorage
+            applications = JSON.parse(localStorage.getItem('railwayConcessionApplications')) || [];
+            loadAdminStatistics();
+            loadAdminApplicationsTable();
+        }
+
+        function loadAdminStatistics() {
+            const stats = {
+                total: applications.length,
+                wait: applications.filter(app => app.status === 'WAIT').length,
+                approved: applications.filter(app => app.status === 'APPROVED').length,
+                completed: applications.filter(app => app.status === 'COMPLETED').length,
+                rejected: applications.filter(app => app.status === 'REJECTED').length
+            };
+
+            const statsContainer = document.getElementById('adminStats');
+            statsContainer.innerHTML = `
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-primary">${stats.total}</h3>
+                            <p class="text-muted mb-0">Total Applications</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-warning">${stats.wait}</h3>
+                            <p class="text-muted mb-0">Waiting</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-success">${stats.approved}</h3>
+                            <p class="text-muted mb-0">Approved</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-info">${stats.completed}</h3>
+                            <p class="text-muted mb-0">Completed</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-danger">${stats.rejected}</h3>
+                            <p class="text-muted mb-0">Rejected</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadAdminApplicationsTable() {
+            const container = document.getElementById('adminTableContainer');
+            
+            if (applications.length === 0) {
+                container.innerHTML = `
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        No applications found.
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Branch</th>
+                                <th>Source</th>
+                                <th>Dest</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            applications.forEach((app, index) => {
+                const statusClass = `status-${app.status.toLowerCase()}`;
+                const statusText = getStatusText(app.status);
+                
+                html += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${app.firstName} ${app.lastName}</td>
+                        <td>${app.email}</td>
+                        <td>${app.branch}</td>
+                        <td>${app.sourceStation}</td>
+                        <td>${app.destinationStation}</td>
+                        <td>${formatDate(app.createdAt)}</td>
+                        <td class="${statusClass}">${statusText}</td>
+                        <td>
+                            ${app.status === 'WAIT' ? `
+                                <button class="btn btn-sm btn-success action-btn" onclick="approveApplication('${app.id}')">
+                                    <i class="fas fa-check"></i> Approve
+                                </button>
+                                <button class="btn btn-sm btn-danger action-btn" onclick="rejectApplication('${app.id}')">
+                                    <i class="fas fa-times"></i> Reject
+                                </button>
+                            ` : ''}
+                            ${app.status === 'APPROVED' ? `
+                                <button class="btn btn-sm btn-primary action-btn" onclick="completeApplication('${app.id}')">
+                                    <i class="fas fa-check-double"></i> Complete
+                                </button>
+                            ` : ''}
+                            ${app.status === 'REJECTED' || app.status === 'COMPLETED' ? `
+                                <span class="text-muted">No actions</span>
+                            ` : ''}
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function approveApplication(appId) {
+            const appIndex = applications.findIndex(app => app.id === appId);
+            if (appIndex !== -1) {
+                applications[appIndex].status = 'APPROVED';
+                applications[appIndex].remarks = 'Approved by admin';
+                localStorage.setItem('railwayConcessionApplications', JSON.stringify(applications));
+                loadAdminDashboard();
+                showToast('Application approved successfully!', 'success');
+            }
+        }
+
+        function rejectApplication(appId) {
+            const appIndex = applications.findIndex(app => app.id === appId);
+            if (appIndex !== -1) {
+                applications[appIndex].status = 'REJECTED';
+                applications[appIndex].remarks = 'Rejected by admin';
+                localStorage.setItem('railwayConcessionApplications', JSON.stringify(applications));
+                loadAdminDashboard();
+                showToast('Application rejected!', 'warning');
+            }
+        }
+
+        function completeApplication(appId) {
+            const appIndex = applications.findIndex(app => app.id === appId);
+            if (appIndex !== -1) {
+                applications[appIndex].status = 'COMPLETED';
+                applications[appIndex].remarks = 'Process completed';
+                localStorage.setItem('railwayConcessionApplications', JSON.stringify(applications));
+                loadAdminDashboard();
+                showToast('Application marked as completed!', 'info');
+            }
+        }
+
+        function adminLogout() {
+            document.getElementById('adminLogin').style.display = 'block';
+            document.getElementById('adminDashboard').style.display = 'none';
+            document.getElementById('adminEmail').value = '';
+            document.getElementById('adminPassword').value = '';
+            showToast('Logged out successfully', 'info');
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Railway Concession Portal initialized');
+            // Make sure the landing page is active
+            showPage('landingPage');
+        });
+    </script>
+</body>
+</html>
